@@ -106,7 +106,19 @@ class Board:
         Returns:
             a tuple of row, column index identifying the most constrained cell
         """
-        pass
+
+        fewestPossible = 10
+        mostConstrainedX = 0
+        mostConstrainedY = 0
+
+        for i in self.rows:
+            for j in i:
+                if isinstance(j, list) and len(j) < fewestPossible:
+                    fewestPossible = len(j)
+                    mostConstrainedX = self.rows.index(i)
+                    mostConstrainedY = i.index(j)
+
+        return (mostConstrainedX, mostConstrainedY)
 
     def failure_test(self) -> bool:
         """Check if we've failed to correctly fill out the puzzle. If we find a cell
@@ -116,7 +128,11 @@ class Board:
         Returns:
             True if we have failed to fill out the puzzle, False otherwise
         """
-        pass
+        for i in self.rows:
+            for j in i:
+                if len(j) == 0:
+                    return True
+        return False
 
     def goal_test(self) -> bool:
         """Check if we've completed the puzzle (if we've placed all the numbers).
@@ -125,7 +141,12 @@ class Board:
         Returns:
             True if we've placed all numbers, False otherwise
         """
-        pass
+        for i in self.rows:
+            for j in i:
+                if isinstance(j, list):
+                    return False
+                
+        return True
 
     def update(self, row: int, column: int, assignment: int) -> None:
         """Assigns the given value to the cell given by passed in row and column
@@ -139,7 +160,13 @@ class Board:
             column - index of the column to assign
             assignment - value to place at given row, column coordinate
         """
-        pass
+        for i in range(self.rows):
+            remove_if_exists(self.rows[row][i], assignment)
+            remove_if_exists(self.rows[i][column], assignment)
+
+        for i, j in self.subgrid_coordinates(row, column):
+            remove_if_exists(self.rows[i][j], assignment)
+
 
 
 def DFS(state: Board) -> Board:
